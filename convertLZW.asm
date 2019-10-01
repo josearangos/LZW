@@ -2,22 +2,31 @@
 
 
 .include "readFileMacro.asm"
-
-
+.include "searchMacro.asm"
+.include "createFile.asm"
+.include "addToFile.asm"
 .data
 
  filePath: .asciiz "frase.txt"
 
 .text
-      main:
 
-      	   readFile("dicionarioBase.txt",20000)
-      	   lb $a0,0($v0) # en $V0 viene el inicio del texto leeido
-	   li $v0,1
-	   syscall   
+# $s0: TXT file descriptor
+# $s1: DICTIONARY file descriptor
+# $s2: OUTPUT_ENCODE file descriptor
+# $s3: DICTIONARY index
+# $s4: 1 if char. 0 if EOF
+
+main:
+	readFile("newDictionary.txt",20000)
+	
+	#sll $t0,$t0,2
+	#add $t2,$t0,$v0
+	
 	   
-	   #beq $s6,111,1Exit	
-	   #addi $s4,$zero,79 # Comparar con numero decimales.
-	   
-
-
+	search("l", $v0)
+	#createFile("diccionarioBase.txt","newDictionary.txt", 2000)
+	#addToFile("newDictionary.txt", "pepone",6)
+	
+	
+	
