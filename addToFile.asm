@@ -1,18 +1,13 @@
 .macro addToFile(%fileName, %word, %wordSize)
   
-  .data
+.data
   fileName:		.asciiz %fileName	# Este es el nombre del archivo de salida
-  
- sentence:		.asciiz %word
- 
 
- .align 2
+.align 2
 
-  .text
+.text
   
   add $t6,  $zero,%wordSize
-  
-  
   
   # Open (for writing) a file that does not exist
 	li $v0, 13		# System call for open file
@@ -25,11 +20,11 @@
   # Write to file just opened
 	li $v0, 15		# System call for write to a file
 	move $a0, $s1		# Restore file descriptor (open for writing)
-	la $a1, sentence	# Address of buffer from which to write
+	move $a1, %word		# Address of buffer from which to write
 	add $a2, $t6,$zero	# Number of characters to write
 	syscall
 		
-	la $a0,sentence
+	move $a0, %word
 	li $v0,4
 	syscall
 	
