@@ -1,17 +1,14 @@
 .macro readFile(%PATH,%SIZE)
-
-
-
-	.data
+.data
 
 	file_in:	.asciiz %PATH	# Reemplace esta cadena con el nombre del archivo que desea abrir para ser le�do
 	sentence:	.byte 0x0D, 0x0A, 0x0D, 0x0A	# 0x0D: Ascii para retorno de carro. 0x0A: Ascii para salto de l�nea
 	sentence_cont:	.asciiz "This is the new ending line"
 
-	.align 2
+.align 2
 	input_buffer:	.space %SIZE
 
-	.text
+.text
 
 	# Open (for reading) a file
 	li $v0, 13		# System call for open file
