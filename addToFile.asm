@@ -3,8 +3,7 @@
   .data
   fileName:		.asciiz %fileName	# Este es el nombre del archivo de salida
   
- sentence:	.byte 0x0D, 0x0A	# 0x0D: Ascii para retorno de carro. 0x0A: Ascii para salto de línea
- sentence_cont:	.asciiz %word
+ sentence:		.asciiz %word
  
 
  .align 2
@@ -12,7 +11,6 @@
   .text
   
   add $t6,  $zero,%wordSize
-  addi $t6, $t6, 2
   
   
   

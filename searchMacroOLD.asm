@@ -22,17 +22,18 @@
       		addi $t1, $t1, 1    		      		    		      		
       		beq $t3, $t2, return_index
       		j loop
-
-	return_index:			#
+			
+	return_index:
 		move $a0, $t1
 		li $v0, 1
 		syscall
 		j exit
 		
 	index_not_found:
-		addi $a0, $zero, -1
+		move $a0, $zero
 		li $v0, 1
 		syscall
+		
 	exit:	
 .end_macro 
 
@@ -50,17 +51,9 @@
 		searchChar($t0)
 		beqz $t3, index_not_found
 		j exit
-	
-	return_index:
-		move $a0, $t1
-		li $v0, 1
-		syscall
-		j exit
-		
 	index_not_found:
 		la $a0, message
 		li $v0, 4
-		syscall	
-		
+		syscall
 	exit:
 .end_macro 
