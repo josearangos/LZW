@@ -54,8 +54,10 @@ next:
  	
 loop: 	
  	lb $t7, 0($s2)
+ 	lb $t8, 0($s3) 	#
  	beqz $t7, no_iguales
  	lw $t7, 0($s2)
+ 	lw $t8, 0($s3)	#
  	beq $t8, $t7, iguales
  	addi $t4, $t4, 1
  	addi $s2, $s2, 4
