@@ -5,15 +5,18 @@
 .text
 W_append:
 	la $s4, WK
+	la $t6, (%W)
+	la $s7, (%K)
 	
 W_append_cont:
-	lb $t5, 0(%W)
+	lb $t5, 0($t6)
 	beqz $t5, pos
 	beq $t5, 32, pos
 	beq $s1, 4, pos
 	sb $t5, 0($s4)
 	addi $s4, $s4, 1
 	addi $s1, $s1, 1
+	addi $t6, $t6, 1
 	j W_append_cont
 
 pos:
@@ -25,13 +28,14 @@ pos:
 	j pos
 
 K_append:
-	lb $t5, 0(%K)
+	lb $t5, 0($s7)
 	beqz $t5, end_append
 	beq $t5, 32, end_append
 	beq $s1, 4, end_append
 	sb $t5, 0($s4)
 	addi $s4, $s4, 1
 	addi $s1, $s1, 1
+	addi $s7, $s7, 1
 	j K_append
 
 end_append:

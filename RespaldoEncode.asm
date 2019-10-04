@@ -59,6 +59,7 @@ loop:
 	lb $t5, 0($t9)			#Caracter de frase en la posicion t9 (Esto es K)
 	beqz $t5, end_loop
 	sb $t5, 0($s7)
+	move $s4, $zero
 	conc_WK($t6, $s7)
 	
 	addi $t9, $t9, 1	#Direccion Frase TXT
@@ -88,8 +89,6 @@ next_loop:
 W_append:
 	move $t6, $s4
 	j loop
-	conc_WK($t6, $s7)
-	j next_loop
 ###	
 	
 append_to_dictionary:
