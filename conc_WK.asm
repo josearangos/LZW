@@ -1,10 +1,9 @@
-.macro conc_WK(%W, %K)
+.macro conc_WK(%W, %K, %WK)
 .data
 .align 2
-	WK:		.space 4
 .text
 W_append:
-	la $s4, WK
+	la $s4, (%WK)
 	la $t6, (%W)
 	la $s7, (%K)
 	
@@ -43,5 +42,4 @@ end_append:
 	la $s7, (%K)
 	move $s1, $s4
 	#la $s4, WK
-        j loop
 .end_macro 

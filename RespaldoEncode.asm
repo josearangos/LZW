@@ -58,25 +58,38 @@ loop:
 	lb $t5, 0($t6)			# W
 	lb $t5, 0($t9)			#Caracter de frase en la posicion t9 (Esto es K)
 	beqz $t5, end_loop
-	sb $t5, 0($s7)
-	move $s4, $zero
-	conc_WK($t6, $s7)
+	sb $t5, 0($s7)			#Se guarda en el espacio para K
+	#move $s4, $zero
+	conc_WK($t6, $s7, $s4)
 	
 	addi $t9, $t9, 1	#Direccion Frase TXT
 	#addi $s4, $s4, 1	#AUMENTA WK INDEX
 
 next_loop:
 	la $s4, WK
+	#lb $s4, 0($s4)	##
+	
 	getIndex($s4, $t1)
 	la $t6, W
 	la $s7, K
-	move $s4, $s1
+	#move $s4, $s3
+	lw $s4, 0($s4)
 	bne $t4, -1, W_append
-	la $s4, WK
-        lb $t6, 0($s7)
-        la $t6, 0($s7)
+	
+        #lb $t6, 0($s7)
+        #move $t6, $s7
+        
+        #lb $t6, 0($t6)
+        #move $t6, $t6
 	getIndex($t6, $t1)
-	lb $t6, 0($s7)
+	la $t6, W
+	la $s7, K
+	lw $s7, 0($s7)
+	sw $s7, 0($t6)
+	la $s7, K
+	
+	la $s4, WK
+	#lb $t6, 0($s7)
 	move $a0, $t4
 	li $v0, 1
 	syscall
@@ -87,7 +100,8 @@ next_loop:
 	#addToFile("newDictionary.txt", $t3 ,4)
 ###	
 W_append:
-	move $t6, $s4
+	sw $s4, 0($t6)
+	la $s4, WK
 	j loop
 ###	
 	
@@ -124,6 +138,11 @@ end_append_to_dic:
 	#addToFile("newDictionary.txt", "pep ",4)
 
 end_loop:
+	getIndex($t6, $t1)
+	move $a0, $t4
+	li $v0, 1
+	syscall
+	
 	la $t6, W
 	la $s7, K  
 	j exit
