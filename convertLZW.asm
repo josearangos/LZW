@@ -81,14 +81,23 @@ next_loop:
 	#addToFile("newDictionary.txt", $t3 ,4)
 ###	
 W_append:
+	la $s4, WK
+	
+W_append_cont:
 	lb $t5, 0($t6)
-	beqz $t5, K_append
-	beq $t5, 32, K_append
-	beq $t6, 4, K_append
+	beqz $t5, pos
+	beq $t5, 32, pos
+	beq $t6, 4, pos
 	sb $t5, 0($s4)
 	addi $s4, $s4, 1
 	addi $t6, $t6, 1
-	j W_append
+	j W_append_cont
+
+pos:
+	lb $t5, 0($s4)
+	beq $t5, 32, K_append
+	addi $s4, $s4, 1
+	j pos
 
 K_append:
 	lb $t5, 0($s7)
