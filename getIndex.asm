@@ -14,7 +14,6 @@
 .macro  getIndex(%word,%indexFile)
 .data
 .align 0
-	#word:                   	.asciiz %word
 	message:			.asciiz "Indice no  encontrado"
 	messageD:        		.asciiz "Índice encontrado"
 	
@@ -73,8 +72,8 @@ no_iguales:
 	j exit
 	
 exit:             
-	move $a0, $t4  
-	li $v0, 1
-	syscall
+	#move $a0, $t4  
+	#li $v0, 1
+	#syscall
 	
 .end_macro 

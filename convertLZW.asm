@@ -2,7 +2,25 @@
 .include "createFile.asm"
 .include "getIndex.asm"
 
-# $s4: Direccion del espacio reservado para la concatenación de la palabra
+# $t0: NO SE USA AQUI -> GetIndex
+# $t1: Dirección del diccionario TXT
+# $t2: NO SE USA AQUI -> GetIndex
+# $t3: 
+# $t4: INTOCABLE, Es el retorno de GetIndex
+# $t5: NO SE USA AQUI -> GetIndex
+# $t6: W
+# $t7: -> GetIndex
+# $t8: -> GetIndex
+# $t9: Dirección de la frase TXT
+
+# $s0: Caracteres de WK -> createFile, readFile
+# $s1: Contador de palabras en WK
+# $s2: -> GetIndex$
+# $s3: -> GetIndex
+# $s4: Dirección del espacio reservado para la concatenación de la palabra
+# $s5: address de byte 32
+# $s6: Dirección de newDictionary
+# $s7: K
 
 # Registro para W, concatenarlo con K y seguir con añadir a newDictionary
 # Usar GetIndex con el espacio reservado y sumarle 27 al resultado
@@ -14,90 +32,108 @@
 	ask_dic_Str: 			.ascii "Ingrese el nombre del archivo TXT correspondiente al diccionario (max 15 chars): "
 	msg_file_not_found: 		.asciiz "Error: file not found"
 	msg_space_exceeded: 		.asciiz "Espacio para almacenar en el diccionario excedido"
-.align 0
-	dic_file_name: 			.space 15
-	word_temporal:			.space 4
-	test:				.byte 32
-	newDictionary:                  .space 15000
+.align 2
+	W:				.space 4	# $t6
+	K:				.space 4	# $s7
+	WK:				.space 4	# $s4
+	test:				.byte 31
+	new_dictionary:                 .space 15000
 
 .text
 	#createFile("diccionarioBase.txt", "temporalDictionary.txt", 2000)
-	la $s4, word_temporal
-	la $s6, newDictionary
-	move $s0, $s4			
-	addi $s1, $zero, 0
-	
-	addi $t7, $zero, 0		#posicion inicial para insertar en el nuevo diccionario
-
-	addi $t6, $zero, 0
+	la $s6, new_dictionary
+	la $s4, WK
 	readFile("frase.txt",20000)
+	beq $t1, -1, file_not_found
         move $t9, $v0
-        #lw $t3, 0($t0)
-        #lb $t3, 0($t9)
-        #beqz $t3, end_loop
-        addi $t6, $t6, 1
-        la $t3, 0($t9)
-
+        la $s7, 0($t9)
         readFile("diccionarioBase.txt",20000)
         beq $t1, -1, file_not_found
         move $t1, $v0
-	
+
 loop:
-	lb $t3, 0($t9)			#Caracter de frase en la posicion t9 (Esto es K)
-        sw $t3, 0($s4)
-        addi $s4, $s4, 4
-	beqz $t3, end_loop
-	la $t3, 0($t9)
-	#bne $t6, 4, add_zero_to_word
+	lb $s7, 0($t9)			#Caracter de frase en la posicion t9 (Esto es K)
+	beqz $s7, end_loop
+        sb $s7, 0($s4)
+	la $s7, 0($t9)
+	addi $t9, $t9, 1		#Direccion Frase TXT
+	addi $s4, $s4, 1
 
-#next_loop:
-	
-
-	la $s4, word_temporal
-	bne $t4, -1, word_count
-	addi $t9, $t9, 1
+next_loop:
+	la $s4, WK
 	getIndex($s4, $t1)
+	la $t6, W
+	la $s7, K
+	move $s4, $s1
+	bne $t4, -1, W_append
+	la $s4, WK
+        lb $t6, 0($s7)
+        la $t6, 0($s7)
+	getIndex($t6, $t1)
+	lb $t6, 0($s7)
+	move $a0, $t4
+	li $v0, 1
+	syscall
 	j append_to_dictionary
 	
 	j loop
 	
-	#move $a0, $t4  		#IMPRIMIR CODIGO W
-	#li $v0, 1
-	#syscall
-	
-	
 	#addToFile("newDictionary.txt", $t3 ,4)
-	
-word_count:				#REVISAR (contar caracteres)
-	lb $s0, 0($s0)
-	beqz $s0, concat_next_char
-	beq $s1, 4, space_exceeded
-	
-	addi $s1, $s1, 1		# contador de palabras en concat_next_char
-	j word_count
-	
-
-concat_next_char:			#Concatena en palabra temporal
-	lb $t3, 0($t9)
-	sw $t3, 0($s4)
-	la $t3, 0($t9) 			#Se restaura a su estado anterior
+###	
+W_append:
+	lb $t5, 0($t6)
+	beqz $t5, K_append
+	beq $t5, 32, K_append
+	beq $t6, 4, K_append
+	sb $t5, 0($s4)
 	addi $s4, $s4, 1
-	addi $t9, $t9, 1
-	j loop
+	addi $t6, $t6, 1
+	j W_append
+
+K_append:
+	lb $t5, 0($s7)
+	beqz $t5, end_append
+	beq $t5, 32, end_append
+	beq $s7, 4, end_append
+	sb $s7, 0($s4)
+	addi $s4, $s4, 1
+	addi $s7, $s7, 1
+	j K_append
+
+end_append:
+	la $t6, W
+	la $s7, K
+	move $s1, $s4
+	#la $s4, WK
+        j loop	
+###	
 	
 append_to_dictionary:
-	#beq $t6, 4, next_loop
-	la $s5, test
-	lb $s5, 0($s5)
-	sw $s5, 0($s4)
+	la $t6, W
+	la $s7, K  
 	
-	addi $s4, $s4, 4
-	
+W_append_to_dic:
+	lb $t5, 0($t6)
+	beqz $t5, K_append_to_dic
+	beq $t6, 4, K_append_to_dic
+	sb $t5, 0($s6)
+	addi $s6, $s6, 1
 	addi $t6, $t6, 1
-	#addi $t3, $t3 1
-        #move $t5, $zero
-        #sb   $t5, 0($t3)
-        
+	j W_append
+
+K_append_to_dic:
+	lb $t5, 0($s7)
+	beqz $t5, end_append_to_dic
+	beq $s7, 4, end_append_to_dic
+	sb $s7, 0($s6)
+	addi $s6, $s6, 1
+	addi $s7, $s7, 1
+	j K_append
+
+end_append_to_dic:
+	la $t6, W
+	la $s7, K    
+	move $s1, $s4
         j loop
         
 	#search("pepone", $v0)
@@ -105,7 +141,8 @@ append_to_dictionary:
 	#addToFile("newDictionary.txt", "pep ",4)
 
 end_loop:
-	move $t7, $zero				#liberamos $t7
+	la $t6, W
+	la $s7, K  
 	j exit
 
 space_exceeded:
