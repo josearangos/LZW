@@ -1,5 +1,6 @@
 .include "readFileMacro.asm"
 .include "createFile.asm"
+.include "addToFile.asm"
 .include "getIndex.asm"
 .include "conc_WK.asm"
 
@@ -41,14 +42,14 @@
 	new_dictionary:                 .space 15000
 
 .text
-	#createFile("diccionarioBase.txt", "temporalDictionary.txt", 2000)
+	createFile("diccionarioBase.txt", "newDictionary.txt", 2000)
 	la $s6, new_dictionary
 	la $s4, WK
 	readFile("frase.txt",20000)
 	beq $t1, -1, file_not_found
         move $t9, $v0
         la $s7, 0($t9)
-        readFile("diccionarioBase.txt",20000)
+        readFile("newDictionary.txt",20000)
         beq $t1, -1, file_not_found
         move $t1, $v0
         la $t6, W
@@ -75,24 +76,31 @@ next_loop:
 	#move $s4, $s3
 	lw $s4, 0($s4)
 	bne $t4, -1, W_append
-	
         #lb $t6, 0($s7)
         #move $t6, $s7
         
         #lb $t6, 0($t6)
         #move $t6, $t6
 	getIndex($t6, $t1)
+	
 	la $t6, W
 	la $s7, K
 	lw $s7, 0($s7)
 	sw $s7, 0($t6)
 	la $s7, K
-	
 	la $s4, WK
-	#lb $t6, 0($s7)
+	addToFile("newDictionary.txt", $s4 ,4)
+	readFile("newDictionary.txt",20000)
+        beq $t1, -1, file_not_found
+        move $t1, $v0
+	la $t6, W
 	move $a0, $t4
 	li $v0, 1
 	syscall
+	li $a0 ' '
+	li $v0, 11
+	syscall
+	sw $zero, 0($s4)
 	j loop
 	
 	#j loop
@@ -102,37 +110,9 @@ next_loop:
 W_append:
 	sw $s4, 0($t6)
 	la $s4, WK
+	sw $zero, 0($s4)
 	j loop
-###	
-	
-append_to_dictionary:
-	la $t6, W
-	la $s7, K  
-	
-W_append_to_dic:
-	lb $t5, 0($t6)
-	beqz $t5, K_append_to_dic
-	beq $t6, 4, K_append_to_dic
-	sb $t5, 0($s6)
-	addi $s6, $s6, 1
-	addi $t6, $t6, 1
-	j W_append_to_dic
-
-K_append_to_dic:
-	lb $t5, 0($s7)
-	beqz $t5, end_append_to_dic
-	beq $s7, 4, end_append_to_dic
-	sb $s7, 0($s6)
-	addi $s6, $s6, 1
-	addi $s7, $s7, 1
-	j K_append_to_dic
-
-end_append_to_dic:
-	la $t6, W
-	la $s7, K    
-	move $s1, $s4
-        j loop
-        
+###
 	#search("pepone", $v0)
 	#createFile("diccionarioBase.txt","newDictionary.txt", 2000)
 	#addToFile("newDictionary.txt", "pep ",4)

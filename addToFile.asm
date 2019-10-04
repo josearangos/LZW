@@ -24,9 +24,9 @@
 	add $a2, $t6,$zero	# Number of characters to write
 	syscall
 		
-	move $a0, %word
-	li $v0,4
-	syscall
+	#move $a0, %word
+	#li $v0,4
+	#syscall
 	
  # Close the file
 
