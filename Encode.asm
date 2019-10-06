@@ -24,10 +24,6 @@
 # $s6: Dirección de newDictionary
 # $s7: K
 
-# Registro para W, concatenarlo con K y seguir con añadir a newDictionary
-# Usar GetIndex con el espacio reservado y sumarle 27 al resultado
-# Añadr parametro a GetIndex para saber  se imprime o no
-
 .data
 	
 	filePath: 			.asciiz "frase.txt"
@@ -38,12 +34,9 @@
 	W:				.space 4	# $t6
 	K:				.space 4	# $s7
 	WK:				.space 4	# $s4
-	test:				.byte 31
-	new_dictionary:                 .space 15000
 
 .text
 	createFile("diccionarioBase.txt", "newDictionary.txt", 2000)
-	la $s6, new_dictionary
 	la $s4, WK
 	readFile("frase.txt",20000)
 	beq $t1, -1, file_not_found
@@ -56,31 +49,21 @@
         la $s7, K
 
 loop:
-	lb $t5, 0($t6)			# W
-	lb $t5, 0($t9)			#Caracter de frase en la posicion t9 (Esto es K)
+	lb $t5, 0($t6)
+	lb $t5, 0($t9)
 	beqz $t5, end_loop
-	sb $t5, 0($s7)			#Se guarda en el espacio para K
-	#move $s4, $zero
+	sb $t5, 0($s7)
 	conc_WK($t6, $s7, $s4)
 	
-	addi $t9, $t9, 1	#Direccion Frase TXT
-	#addi $s4, $s4, 1	#AUMENTA WK INDEX
-
+	addi $t9, $t9, 1
 next_loop:
 	la $s4, WK
-	#lb $s4, 0($s4)	##
 	
 	getIndex($s4, $t1)
 	la $t6, W
 	la $s7, K
-	#move $s4, $s3
 	lw $s4, 0($s4)
 	bne $t4, -1, W_append
-        #lb $t6, 0($s7)
-        #move $t6, $s7
-        
-        #lb $t6, 0($t6)
-        #move $t6, $t6
 	getIndex($t6, $t1)
 	
 	la $t6, W
@@ -93,19 +76,17 @@ next_loop:
 	readFile("newDictionary.txt",20000)
         beq $t1, -1, file_not_found
         move $t1, $v0
-	la $t6, W
+        la $t6, W
 	move $a0, $t4
 	li $v0, 1
 	syscall
+	
 	li $a0 ' '
 	li $v0, 11
 	syscall
 	sw $zero, 0($s4)
 	j loop
-	
-	#j loop
-	
-	#addToFile("newDictionary.txt", $t3 ,4)
+
 ###	
 W_append:
 	sw $s4, 0($t6)
@@ -113,9 +94,6 @@ W_append:
 	sw $zero, 0($s4)
 	j loop
 ###
-	#search("pepone", $v0)
-	#createFile("diccionarioBase.txt","newDictionary.txt", 2000)
-	#addToFile("newDictionary.txt", "pep ",4)
 
 end_loop:
 	getIndex($t6, $t1)
