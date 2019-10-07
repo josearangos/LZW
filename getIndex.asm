@@ -14,7 +14,7 @@
 .macro  getIndex(%word,%indexFile)
 .data
 .align 0
-	message:			.asciiz "Indice no  encontrado"
+	message:			.asciiz "Indice no encontrado"
 	messageD:        		.asciiz "Índice encontrado"
 	
 .text

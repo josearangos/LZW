@@ -6,6 +6,7 @@ W_append:
 	la $s4, (%WK)
 	la $t6, (%W)
 	la $s7, (%K)
+	add $s1, $zero, 0
 	
 W_append_cont:
 	lb $t5, 0($t6)
